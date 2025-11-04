@@ -1,8 +1,27 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { type FC } from "react";
 import { Retool } from "@tryretool/custom-component-support";
-import MDEditor, { getExtraCommands } from "@uiw/react-md-editor";
+import MDEditor, { getCommands, getExtraCommands } from "@uiw/react-md-editor";
 import "@uiw/react-md-editor/markdown-editor.css";
+
+const underline = {
+  name: "Underline",
+  keyCommand: "underline",
+  shortcuts: "ctrlcmd+u",
+  buttonProps: { "aria-label": "Underline" },
+  icon: (
+    <svg width="12" height="12" viewBox="4 2 16 20">
+      <path
+        d="M18,18.5 C18.8284,18.5 19.5,19.1716 19.5,20 C19.5,20.7796706 18.9050879,21.4204457 18.1444558,21.4931332 L18,21.5 L6,21.5 C5.17157,21.5 4.5,20.8284 4.5,20 C4.5,19.2203294 5.09488554,18.5795543 5.85553954,18.5068668 L6,18.5 L18,18.5 Z M17,2.5 C17.7796706,2.5 18.4204457,3.09488554 18.4931332,3.85553954 L18.5,4 L18.5,11 C18.5,14.5899 15.5899,17.5 12,17.5 C8.48819022,17.5 5.62684948,14.7150508 5.50410301,11.2331372 L5.5,11 L5.5,4 C5.5,3.17157 6.17157,2.5 7,2.5 C7.77969882,2.5 8.420449,3.09488554 8.49313345,3.85553954 L8.5,4 L8.5,11 C8.5,12.933 10.067,14.5 12,14.5 C13.8685667,14.5 15.3951267,13.0357256 15.4948211,11.1920355 L15.5,11 L15.5,4 C15.5,3.17157 16.1716,2.5 17,2.5 Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  execute: (state: any, api: any) => {
+    const modifyText = state.selectedText ? `_${state.selectedText}_` : `_`;
+    api.replaceSelection(modifyText);
+  },
+};
 
 const createFullscreenCommand = (toggleFullscreen: () => Promise<void>) => ({
   name: "fullscreen",
@@ -74,6 +93,12 @@ export const MarkdownEditor: FC = () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, []);
 
+  const commands = useMemo(() => {
+    const cmds = getCommands();
+    cmds.splice(2, 0, underline);
+    return cmds;
+  }, []);
+
   const extraCommands = useMemo(() => {
     const extraCmds = getExtraCommands();
     extraCmds.splice(-1, 1, createFullscreenCommand(toggleFullscreen));
@@ -95,6 +120,7 @@ export const MarkdownEditor: FC = () => {
       <MDEditor
         value={localValue}
         onChange={(value) => setLocalValue(value ?? "")}
+        commands={commands}
         extraCommands={extraCommands}
         fullscreen={isFullscreen}
         style={
@@ -107,6 +133,24 @@ export const MarkdownEditor: FC = () => {
         }
         visibleDragbar={false}
         data-color-mode={colorMode}
+        previewOptions={{
+          components: {
+            em: (props: any) => {
+              const node = props.node;
+              const position = node?.position;
+              if (position) {
+                const sourceText = localValue.substring(
+                  position.start.offset,
+                  position.end.offset
+                );
+                if (sourceText?.startsWith("_") && sourceText.endsWith("_")) {
+                  return <u {...props} />;
+                }
+              }
+              return <em {...props} />;
+            },
+          },
+        }}
       />
     </div>
   );
