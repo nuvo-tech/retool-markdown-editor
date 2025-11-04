@@ -1,0 +1,30 @@
+{
+  "customComponentSupportVersion": "2",
+  "components": {
+    "MarkdownEditor": {
+      "name": "Markdown Editor",
+      "model": [
+        {
+          "name": "defaultValue",
+          "label": "Default value",
+          "type": "string"
+        },
+        {
+          "name": "value",
+          "inspector": "hidden",
+          "label": "Value",
+          "type": "string"
+        },
+        {
+          "name": "theme",
+          "initialValue": "Light",
+          "label": "Theme",
+          "type": "string"
+        }
+      ],
+      "events": [],
+      "defaultHeight": 5,
+      "defaultWidth": 2
+    }
+  }
+}
