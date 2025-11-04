@@ -13,7 +13,7 @@ Requirements:
 
 Steps:
 
-1. Run `git clone https://github.com/jamesg31/retool-wysiwyg-editor.git`
+1. Run `git clone https://github.com/jamesg31/retool-markdown-editor.git`
 2. Run `npm install`
 3. Run `npx retool-ccl login`
 4. Run `npx retool-ccl publish`
